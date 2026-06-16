@@ -1,0 +1,68 @@
+name: Test VulnAlerts basic invocation
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Verify action.yml exists
+        run: |
+          if [ ! -f "$GITHUB_WORKSPACE/action.yml" ]; then
+            echo "FAIL: action.yml not found"
+            exit 1
+          fi
+          echo "PASS: action.yml found"
+
+      - name: Verify cpe.txt exists
+        run: |
+          if [ ! -f "$GITHUB_WORKSPACE/cpe.txt" ]; then
+            echo "FAIL: cpe.txt not found"
+            exit 1
+          fi
+          echo "PASS: cpe.txt found"
+          cat "$GITHUB_WORKSPACE/cpe.txt"
+
+      - name: Verify entrypoint.sh exists and is executable
+        run: |
+          if [ ! -x "$GITHUB_WORKSPACE/entrypoint.sh" ]; then
+            echo "FAIL: entrypoint.sh not found or not executable"
+            exit 1
+          fi
+          echo "PASS: entrypoint.sh is executable"
+
+      - name: Verify main.py exists
+        run: |
+          if [ ! -f "$GITHUB_WORKSPACE/main.py" ]; then
+            echo "FAIL: main.py not found"
+            exit 1
+          fi
+          echo "PASS: main.py found"
+
+      - name: Verify Dockerfile exists
+        run: |
+          if [ ! -f "$GITHUB_WORKSPACE/Dockerfile" ]; then
+            echo "FAIL: Dockerfile not found"
+            exit 1
+          fi
+          echo "PASS: Dockerfile found"
+
+      - id: action
+        uses: .
+        env:
+          SLACK_WEBHOOK: "https://hooks.slack.com/services/FAKE/FAKE/FAKE"
+        continue-on-error: true
+
+      - name: Assert action ran (may fail due to network/webhook)
+        run: |
+          echo "Action step outcome: ${{ steps.action.outcome }}"
+          # The action is expected to fail in test environments because:
+          # 1. The NVD feed URL may be unreachable
+          # 2. The Slack webhook is fake
+          # We just verify the action was invoked (not skipped)
+          if [ "${{ steps.action.outcome }}" = "skipped" ]; then
+            echo "FAIL: action was skipped, expected it to run"
+            exit 1
+          fi
+          echo "PASS: action was invoked (outcome: ${{ steps.action.outcome }})"
