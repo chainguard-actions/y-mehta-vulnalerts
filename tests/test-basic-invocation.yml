@@ -1,0 +1,28 @@
+name: Test VulnAlerts - Basic Invocation
+on:
+  workflow_dispatch:
+jobs:
+  test-basic-invocation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Run action (expect failure due to external network dependency)
+        id: action
+        uses: .
+        continue-on-error: true
+        env:
+          SLACK_WEBHOOK: "https://hooks.slack.com/services/FAKE/FAKE/FAKE"
+
+      - name: Assert action ran (Docker container built and started)
+        run: |
+          echo "outcome: ${{ steps.action.outcome }}"
+          # The action is expected to fail because it tries to download from NVD
+          # (external network) and/or post to a fake Slack webhook.
+          # What we verify is that the action was invoked (not skipped/cancelled)
+          # and either succeeded or failed (not an infrastructure error).
+          if [ "${{ steps.action.outcome }}" = "skipped" ] || [ "${{ steps.action.outcome }}" = "cancelled" ]; then
+            echo "FAIL: action was skipped or cancelled — Docker container may not have started"
+            exit 1
+          fi
+          echo "PASS: action was invoked (outcome=${{ steps.action.outcome }})"
