@@ -6,9 +6,9 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 
 ## Versions
 
-| Version | Tag | Upstream commit |
-|---------|-----|-----------------|
-| v1 | [`v1`](https://github.com/chainguard-actions/y-mehta-vulnalerts/tree/v1) | [`8cef44e`](https://github.com/y-mehta/vulnalerts/commit/8cef44eade35378a2b7f9d0249d9c0544012448e) |
+| Version | Tag | Upstream commit | Hardening report |
+|---------|-----|-----------------|------------------|
+| v1 | [`v1`](https://github.com/chainguard-actions/y-mehta-vulnalerts/tree/v1) | [`8cef44e`](https://github.com/y-mehta/vulnalerts/commit/8cef44eade35378a2b7f9d0249d9c0544012448e) | [`HARDENING.md`](https://github.com/chainguard-actions/y-mehta-vulnalerts/blob/v1/HARDENING.md) |
 
 ## Privacy
 
